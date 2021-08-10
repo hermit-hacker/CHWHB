@@ -187,7 +187,7 @@ apt update > chwhb.log 2>&1
 showInfo "Repositories updated"
 
 # Build core list of things to install
-INSTALLPKGS="android-sdk apktool automake build-essential cmake curl driftnet ettercap-common ettercap-graphical firefoxdriver gcc gcc-arm-none-eabi gdb gdb-multiarch git golang golang-doc hexedit hexdiff libftdi-dev libpci-dev libsmali-java libusb-dev libusb-1.0-0-dev linux-headers-generic linux-headers-$(uname -r) m4 meld minicom nasm nmap openjdk-14-jre picocom python2 python3 python3-dev python3-pip python3-selenium qunit-selenium screen tcptrace tmux tshark wget wireshark"
+INSTALLPKGS="android-sdk apktool automake build-essential cmake curl driftnet ettercap-common ettercap-graphical firefoxdriver gcc gcc-arm-none-eabi gdb gdb-multiarch git golang golang-doc hexedit hexdiff libftdi-dev libpci-dev libsmali-java libusb-dev libusb-1.0-0-dev linux-headers-generic linux-headers-$(uname -r) m4 meld minicom nasm nmap openjdk-14-jre picocom python2 python3 python3-dev python3-pip python3-selenium qunit-selenium screen tcptrace tmux tshark wget wireshark xxd"
 
 # Add Arduino-specific items
 INSTALLPKGS="$INSTALLPKGS arduino arduino-core arduino-mk arduino-builder arduino-mighty-1284p"

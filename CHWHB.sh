@@ -3,7 +3,7 @@
 ##########################################
 # Program:    CHWHB (Create Hardware Hacking Box)
 # Author:     Brian Mork (Hermit)
-# Version:    0.1.2          - Added AVR installs and Ghidra
+# Version:    0.1.3          - User bugfixes
 # Modified:   2021-08-25
 ##########################################
 
@@ -120,7 +120,7 @@ dirExists()
 checkMakeFile()
 {
   fileExists $1
-  if [ "$ISFILE" == "no" ]; then
+  if [ "${ISFILE}" == "no" ]; then
     touch $1
   fi
 }
@@ -165,7 +165,8 @@ purgeIfFound()
 
 # Check for root, exit if not
 if [[ $EUID -ne 0 ]]; then
-  showError "You must be root.  Exiting..."
+  echo "You must be root.  Exiting..."
+  exit 1
 fi
 
 # Check for Ubuntu-esque operating system, exit if not found
@@ -184,7 +185,7 @@ fi
 cd /root
 
 # Add OpenJDK to repositories
-add-apt-repository ppa:openjdk-r/ppa
+add-apt-repository -y ppa:openjdk-r/ppa >> ${LOGFILE} 2>&1
 
 # Update repositories
 showInfo "Updating repositories..."
@@ -238,7 +239,7 @@ apt -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
 showInfo "Installing Salae"
 SALAEFILE="/usr/local/sbin/salae-logic-analyzer"
 fileExists ${SALAEFILE}
-if [ "$ISFILE" == "yes" ]; then
+if [ "${ISFILE}" == "yes" ]; then
   showInfo "Found Salae Logic Analyzer already installed.  Software will be updated."
   rm -f ${SALAEFILE} 
 fi
@@ -294,10 +295,13 @@ purgeIfFound ${GINSTALLDIR}
 GHIDRAFILE="${GTEMP}/ghidra.zip"
 wget -O ${GHIDRAFILE} "https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_10.0.2_build/ghidra_10.0.2_PUBLIC_20210804.zip" >> ${LOGFILE} 2>&1
 cd ${GTEMP}
-unzip ${GHIDRAFILE}
+unzip ${GHIDRAFILE} >> ${LOGFILE} 2>&1
 # Assumption that the directory structure won't change, may need fixed later
 mv ghidra_* ${GINSTALLDIR}
-ln -s ${GINSTALLDIR}/ghidraRun /usr/local/bin/ghidra
+fileExists /usr/local/bin/ghidra
+if [ ${ISFILE} == "no" ]; then
+  ln -s ${GINSTALLDIR}/ghidraRun /usr/local/bin/ghidra
+fi
 rm -Rf ${GTEMP}
 cd /root
 showInfo "Installed Ghidra"
@@ -335,15 +339,7 @@ git clone https://github.com/hermit-hacker/OSCP-Study-Notes.git /root/OSCP-Notes
 showInfo "Installations complete!"
 
 showInfo "Cleaning up unused packages"
-apt -y -q autoremove >> >> ${LOGFILE} 2>&1
-unset ${DEBIAN_FRONTEND}
-unset ${OSNAME}
-unset ${LOGFILE}
-unset ${GTEMP}
-unset ${GINSTALLDIR}
-unset ${GHIDRAFILE}
-unset ${SALAEFILE}
-unset ${DISCORDTMPDIR}
+apt -y -q autoremove >> ${LOGFILE} 2>&1
 
 showInfo "Clean up complete!"
 showInfo "--------------------------------------------"

@@ -192,6 +192,9 @@ INSTALLPKGS="android-sdk apktool automake build-essential cmake curl driftnet et
 # Add Arduino-specific items
 INSTALLPKGS="$INSTALLPKGS arduino arduino-core arduino-mk arduino-builder arduino-mighty-1284p"
 
+# Add AVR support beyond Arduino
+INSTALLPKGS="$INSTALLPKGS simavr simulavr xc3sprog gdb-avr avarice"
+
 # Add logic analyzer software
 INSTALLPKGS="$INSTALLPKGS sigrok sigrok-cli sigrok-firmware-fx2lafw"
 

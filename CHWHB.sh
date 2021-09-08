@@ -208,6 +208,9 @@ INSTALLPKGS="android-sdk apktool automake build-essential cmake curl driftnet et
 # Add Ghidra pre-requisites
 INSTALLPKGS="$INSTALLPKGS openjdk-11-jdk openjdk-11-jre-headless"
 
+# Add Radare 2 items
+INSTALLPKGS="$INSTALLPKGS radare2 radare2-cutter"
+
 # Add Arduino-specific items
 INSTALLPKGS="$INSTALLPKGS arduino arduino-core arduino-mk arduino-builder arduino-mighty-1284p"
 

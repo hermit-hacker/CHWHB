@@ -3,8 +3,8 @@
 ##########################################
 # Program:    CHWHB (Create Hardware Hacking Box)
 # Author:     Brian Mork (Hermit)
-# Version:    0.1.3          - User bugfixes
-# Modified:   2021-08-25
+# Version:    0.1.5          - Corrected apt dependencies, process, and git directories
+# Modified:   2021-09-27
 ##########################################
 
 ######################################################################################
@@ -198,45 +198,51 @@ export DEBIAN_FRONTEND=noninteractive
 # Perform upgrade inline?
 ask "Perform upgrade on all packages before continuing?"
 if [ $RETVAL -eq 1 ]; then
+  showInfo "Fixing broken installs"
+  apt -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" --fix-broken install >> ${LOGFILE}  2>&1
   showInfo "Performing upgrade"
   apt -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade >> ${LOGFILE}  2>&1
 fi
 
 # Build core list of things to install
-INSTALLPKGS="android-sdk apktool automake build-essential cmake curl driftnet ettercap-common ettercap-graphical firefoxdriver gcc gcc-arm-none-eabi gdb gdb-multiarch git golang golang-doc hexedit hexdiff libftdi-dev libpci-dev libsmali-java libusb-dev libusb-1.0-0-dev linux-headers-generic linux-headers-$(uname -r) m4 meld minicom nasm nmap openjdk-14-jre picocom python2 python3 python3-dev python3-pip python3-selenium qunit-selenium screen tcptrace tmux tshark wget wireshark xxd"
+INSTALLPKGS="android-sdk apktool automake build-essential cmake curl driftnet ettercap-common ettercap-graphical firefoxdriver gcc gcc-arm-none-eabi gdb gdb-multiarch git git-man golang golang-doc hexedit hexdiff libftdi-dev libpci-dev libsmali-java libusb-dev libusb-1.0-0-dev linux-headers-generic m4 meld minicom nasm nmap openjdk-17-jre picocom python2 python3 python3-dev python3-pip python3-selenium qunit-selenium screen tcptrace tmux tshark wget wireshark xxd"
 
 # Add Ghidra pre-requisites
-INSTALLPKGS="$INSTALLPKGS openjdk-11-jdk openjdk-11-jre-headless"
+INSTALLPKGS="${INSTALLPKGS} openjdk-11-jdk openjdk-11-jre-headless"
 
 # Add Radare 2 items
-INSTALLPKGS="$INSTALLPKGS radare2 radare2-cutter"
+INSTALLPKGS="${INSTALLPKGS} radare2 radare2-cutter"
 
 # Add Arduino-specific items
-INSTALLPKGS="$INSTALLPKGS arduino arduino-core arduino-mk arduino-builder arduino-mighty-1284p"
+INSTALLPKGS="${INSTALLPKGS} arduino arduino-core arduino-mk arduino-builder arduino-mighty-1284p"
 
 # Add AVR support beyond Arduino
-INSTALLPKGS="$INSTALLPKGS simavr simulavr xc3sprog gdb-avr avarice"
+INSTALLPKGS="${INSTALLPKGS} simavr simulavr xc3sprog gdb-avr avarice"
 
 # Add logic analyzer software
-INSTALLPKGS="$INSTALLPKGS sigrok sigrok-cli sigrok-firmware-fx2lafw"
+INSTALLPKGS="${INSTALLPKGS} sigrok sigrok-cli sigrok-firmware-fx2lafw"
 
 # Add firmware tools
-INSTALLPKGS="$INSTALLPKGS avrdude binwalk binutils flashrom squashfs-tools squashfs-tools-ng"
+INSTALLPKGS="${INSTALLPKGS} avrdude binwalk binutils flashrom squashfs-tools squashfs-tools-ng"
 
 # Add filesystem support
-INSTALLPKGS="$INSTALLPKGS aptfs exfat-fuse fuse fuse2fs fusefat fuseiso9660 fusesmb httpfs2 ifuse libfuse2 libfuse3-3 libntfs-3g883 lxcfs ntfs-3g python3-fuse rdiff-backup-fs s3fs squashfuse tmfs vmfs-tools winregfs zfs-fuse"
+INSTALLPKGS="${INSTALLPKGS} aptfs exfat-fuse fuse fuse2fs fusefat fuseiso9660 fusesmb httpfs2 ifuse libfuse2 libfuse3-3 libntfs-3g883 lxcfs ntfs-3g python3-fuse rdiff-backup-fs s3fs squashfuse tmfs vmfs-tools winregfs zfs-fuse"
 
 # Add SDR support
-INSTALLPKGS="$INSTALLPKGS airspy bladerf cubicsdr cutesdr dump1090-mutability freedv gnuradio gqrx-sdr gr-dab gr-fcdproplus gr-hpsdr gr-limesdr gr-osmosdr hackrf hamradio-sdr horst inspectrum multimon-ng osmo-sdr osmo-trx quisk rtl-sdr sdrangelove soapysdr-module-all soapysdr-tools welle.io"
+INSTALLPKGS="${INSTALLPKGS} airspy bladerf cubicsdr cutesdr dump1090-mutability freedv gnuradio gqrx-sdr gr-dab gr-fcdproplus gr-hpsdr gr-limesdr gr-osmosdr hackrf hamradio-sdr horst inspectrum multimon-ng osmo-sdr osmo-trx quisk rtl-sdr sdrangelove soapysdr-module-all soapysdr-tools welle.io"
 
 # Add standard WiFi tools
-INSTALLPKGS="$INSTALLPKGS aircrack-ng airgraph-ng kismet kismet-plugins mdk4 wifite"
+INSTALLPKGS="${INSTALLPKGS} aircrack-ng airgraph-ng kismet kismet-plugins mdk4 wifite"
 
 # Add dependencies for Discord
-INSTALLPKGS="$INSTALLPKGS libappindicator1 libgconf-2-4 gconf2-common libdbusmenu-gtk4 libc++1 libc++1-10 libc++abi1-10"
+INSTALLPKGS="${INSTALLPKGS} libappindicator1 libgconf-2-4 gconf2-common libdbusmenu-gtk4 libc++1 libc++1-10 libc++abi1-10"
+
+# DEBUG
+# echo "${INSTALLPKGS}"
+# ask "PAUSE FOR CONCERNS"
 
 # Install packages
-apt -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install $INSTALLPKGS >> ${LOGFILE}  2>&1
+apt -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install ${INSTALLPKGS} >> ${LOGFILE}  2>&1
 
 # Install Salae software
 showInfo "Installing Salae"
@@ -259,6 +265,7 @@ showInfo "Installed Discord"
 
 # Install CHIPSEC
 showInfo "Installing CHIPSEC"
+cd /root
 pip install setuptools >> ${LOGFILE} 2>&1
 purgeIfFound /root/chipsec
 git clone https://github.com/chipsec/chipsec.git >> ${LOGFILE} 2>&1
@@ -269,6 +276,7 @@ showInfo "Installed CHIPSEC"
 
 # Install smali
 showInfo "Installing smali"
+cd /root
 purgeIfFound /root/smali
 git clone https://github.com/JesusFreke/smali.git >> ${LOGFILE} 2>&1
 cd smali
@@ -278,6 +286,7 @@ showInfo "Installed smali"
 
 # Install Reverse-APK
 showInfo "Installing Reverse-APK"
+cd /root
 purgeIfFound /root/ReverseAPK
 git clone https://github.com/1N3/ReverseAPK.git /root/ReverseAPK >> ${LOGFILE} 2>&1
 cd ReverseAPK

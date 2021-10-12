@@ -305,7 +305,7 @@ GTEMP=`mktemp -d`
 GINSTALLDIR="/usr/local/ghidra"
 purgeIfFound ${GINSTALLDIR}
 GHIDRAFILE="${GTEMP}/ghidra.zip"
-wget -O ${GHIDRAFILE} "https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_10.0.2_build/ghidra_10.0.2_PUBLIC_20210804.zip" >> ${LOGFILE} 2>&1
+wget -O ${GHIDRAFILE} "https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_10.0.4_build/ghidra_10.0.4_PUBLIC_20210928.zip" >> ${LOGFILE} 2>&1
 cd ${GTEMP}
 unzip ${GHIDRAFILE} >> ${LOGFILE} 2>&1
 # Assumption that the directory structure won't change, may need fixed later
